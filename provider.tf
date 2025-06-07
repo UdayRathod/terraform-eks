@@ -1,10 +1,5 @@
 # PROVIDERS
 
-provider "aws" {
-  region = var.aws_region
-}
-
-
 terraform {
   required_version = ">= 1.0"
 
@@ -17,6 +12,11 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "3.7.2"
+    }
+
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.17.0"
     }
   }
 }

@@ -1,4 +1,8 @@
 
+provider "aws" {
+  region = var.aws_region
+}
+# EKS Cluster Module
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.36.0"
