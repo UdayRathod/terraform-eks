@@ -46,7 +46,7 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 
 ## 📁 Directory Structure
 
-
+```
 terraform-eks-cluster/
 ├── aws-ingress-controller.tf
 ├── cluster-autoscaler.tf
@@ -66,7 +66,7 @@ terraform-eks-cluster/
 │   ├── secret.yaml
 │   ├── resource-quota.yaml
 │   └── service.yaml
-
+```
 
 
 
