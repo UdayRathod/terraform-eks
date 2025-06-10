@@ -95,6 +95,7 @@ terraform-eks-cluster/
 git clone https://github.com/UdayRathod/terraform-eks.git
 cd terraform-eks
 ```
+
 ### 2.Update with your IAM role/user arn
 Just update the Access entry paramter in EKS code with your IAM user/role arn which need cluster admin access.
 
@@ -102,25 +103,32 @@ Just update the Access entry paramter in EKS code with your IAM user/role arn wh
 Clone the repository and Run terraform init. This will intialize the terraform environment for you and download the modules, providers and other configuration required.
 
 ### 4.Review the Terraform configuration by command: 
+```bash
 terraform fmt & terraform validate
+```
 
 ### 5.Run terraform plan to see the configuration it creates when executed: by command: 
+```bash
 terraform plan
+```
 
 ### 6.Finally, Apply terraform configuation to create EKS cluster with VPC with command: 
+```bash
 terraform apply
-
-
+```
 
 
 ## 🛠️ Deploy Kubernetes Manifests
 
 ### 1. Copy the manifests files to your k8 nodes by command:
+```bash
 git clone https://github.com/UdayRathod/terraform-eks/tree/eb770dd30bd5bc2838f1ebcaf0ed6962bc740d69/k8-manifests
+```
 
 ### 2. Deploy the K8 resources:
+```bash
 kubectl apply -f k8-manifests/
-
+```
 
 ## 📈 Monitor via Prometheus & Grafana
 Access Grafana via LoadBalancer or Port Forward
