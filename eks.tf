@@ -8,8 +8,8 @@ module "eks" {
   version = "20.36.0"
 
 
-  cluster_name             = local.eks-cluster-name
-  cluster_version          = var.eks-cluster-version
+  cluster_name             = local.eks_cluster_name
+  cluster_version          = var.eks_cluster_version
   enable_irsa              = true
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
@@ -20,6 +20,8 @@ module "eks" {
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
+    Node-monitoring-agent  = {}
+    ebs-csi-driver         = {}
   }
 
   # Adds the current caller identity as an administrator via cluster access entry
@@ -58,6 +60,13 @@ module "eks" {
       min_size     = 4
       max_size     = 8
       desired_size = 4
+
+      #Below tags for used by cluster autoscaler to identify the autoscaling group created by this node group.
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled"                   = "true"
+        "k8s.io/cluster-autoscaler/${local.eks_cluster_name}" = "owned"
+      }
+
     }
   }
 

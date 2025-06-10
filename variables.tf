@@ -4,25 +4,25 @@ variable "aws_region" {
   default     = "us-west-2"
 }
 
-variable "vpc-name" {
+variable "vpc_name" {
   type        = string
   description = "VPC name to use."
   default     = "eks-vpc"
 }
 
-variable "vpc-cidr" {
+variable "vpc_cidr" {
   type        = string
   description = "Base CIDR Block for VPC"
   default     = "10.0.0.0/16"
 }
 
-variable "public-subnets-cidr" {
+variable "public_subnets_cidr" {
   type        = string
   description = "Public CIDR Block for VPC"
   default     = "10.1.0.0/24"
 }
 
-variable "private-subnets-cidr" {
+variable "private_subnets_cidr" {
   type        = string
   description = "Base CIDR Block for VPC"
   default     = "10.2.0.0/24"
@@ -40,7 +40,7 @@ variable "vpc_private_subnet_count" {
   default     = "4"
 }
 
-variable "eks-cluster-version" {
+variable "eks_cluster_version" {
   type        = number
   description = "Base CIDR Block for VPC"
   default     = "1.31"

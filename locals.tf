@@ -1,11 +1,11 @@
 locals {
   common_tags = {
-    "kubernetes.io/cluster/${local.eks-cluster-name}" = "shared"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
     Environment                                       = "Prod"
     Managed_by                                        = "Terraform"
   }
 
-  eks-cluster-name = "aws-eks-${random_string.suffix.result}"
+  eks_cluster_name = "aws-eks-${random_string.suffix.result}"
 }
 
 

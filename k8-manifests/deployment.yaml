@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wanderlust-deployment
+  labels:
+    app: wanderlust-app
+  namespace: wanderlust
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wanderlust-app
+  template:
+    metadata:
+      labels:
+        app: wanderlust-app
+    spec:
+  # This init container runs before the main container starts
+      initContainers:
+        - name: init-container
+          image: busybox:1.28
+          command: ['sh', '-c', 'echo The init container is running! && sleep 5']
+
+      containers:
+  # This is main container runs after the init container starts & completes its task, if any errors in init, the main container will not start.
+        - name: wanderlust-container
+          image: wanderlust-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                # This is the secret that contains the Flask secret key
+                  name: wanderlust-flask-secret
+                  key: FLASK_SECRET_KEY
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          livenessProbe:
+  # This is the liveness probe, it checks if the container is running
+  # If the liveness fails, Kubernetes will restart the container
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+
+          readinessProbe:
+  # This is the readiness probe, it checks if the container is ready to serve traffic
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
+
+
+
+ 
+
+
+ 
