@@ -48,18 +48,9 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 
 
 terraform-eks-cluster/
-├── eks.tf
-├── k8-manifests/
-│ └── deployment.yaml
-│ ├── hpa.yaml
-│ ├── ingress.yaml
-│ ├── namespace.yaml
-| ├── secret.yaml
-| └── resoure-quota.yaml
-| └── service.yaml
-|
 ├── aws-ingress-controller.tf
 ├── cluster-autoscaler.tf
+├── eks.tf
 ├── eks-metrics-server.tf
 ├── locals.tf
 ├── outputs.tf
@@ -67,26 +58,34 @@ terraform-eks-cluster/
 ├── security-grp.tf
 ├── variables.tf
 ├── vpc.tf
-├── provider.tf
+├── k8-manifests/
+│   ├── deployment.yaml
+│   ├── hpa.yaml
+│   ├── ingress.yaml
+│   ├── namespace.yaml
+│   ├── secret.yaml
+│   ├── resource-quota.yaml
+│   └── service.yaml
+
 
 
 
 ## 🛠️ EKS Cluster Setup Instructions
 
-1) Install AWS CLI
-As the first step, you need to install AWS CLI as we will use the AWS CLI (aws configure) command to connect Terraform with AWS in the next steps.
-Follow the below link to Install AWS CLI.
+1) Install AWS CLI:
+   As the first step, you need to install AWS CLI as we will use the AWS CLI (aws configure) command to connect Terraform with AWS in the next steps.
+   Follow the below link to Install AWS CLI.
+  
+   https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+2) Install Terraform:
+   Next, Install Terraform using the below link.
 
-2) Install Terraform
-Next, Install Terraform using the below link.
+   https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 
-https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
-
-3) Connect Terraform with AWS
-Its very easy to connect Terraform with AWS. Run aws configure command and provide the AWS Security credentials.
+3) Connect Terraform with AWS:
+   Its very easy to connect Terraform with AWS. Run aws configure command and provide the AWS Security credentials.
 
 
 
