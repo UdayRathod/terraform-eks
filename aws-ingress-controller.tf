@@ -309,26 +309,27 @@ resource "helm_release" "aws-lb-controller" {
   chart   = "aws-load-balancer-controller"
   version = "1.7.2"
 
-  set = [{
+  set {
     name  = "clusterName"
     value = module.eks.cluster_name
-    },
-    {
-      name  = "region"
-      value = var.aws_region
-    },
-    {
-      name  = "serviceAccount.name"
-      value = "aws-load-balancer-controller"
-    },
-    {
-      name  = "serviceAccount.create"
-      value = "false"
-    },
-    {
-      name  = "vpcId"
-      value = module.vpc.vpc_id
-  }]
+  }
+
+  set {
+    name  = "region"
+    value = var.aws_region
+  }
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+  set {
+    name  = "serviceAccount.create"
+    value = "false"
+  }
+  set {
+    name  = "vpcId"
+    value = module.vpc.vpc_id
+  }
 
   depends_on = [aws_eks_pod_identity_association.aws-load-balancer-controller-association, module.eks, helm_release.cluster-autoscaler]
 }

@@ -131,13 +131,20 @@ kubectl apply -f k8-manifests/
 ```
 
 ## 📈 Monitor via Prometheus & Grafana
-Access Grafana via LoadBalancer or Port Forward
-Import Prometheus as a data source
-Use pre-built Kubernetes dashboards or create custom ones
+Access Grafana via Ingress ALB
+
+Promethues Dashboard URL:
+http://<ALB-DNS>/prometheus:80
+
 
 Grafana Dashboard URL:
-http://<grafana-load-balancer>:3000
-Default login: admin/admin
+http://<ALB-DNS>/grafana:80
+Default login: admin
+Password: I have variablized the grafana_admin_password and stored the value in terraform.tfvars which not committed to Git. 
+You can create a terraform.tfvars file and the store the grafana password value.
+
+Import Prometheus as a data source
+Use pre-built Kubernetes dashboards(3662) or create custom ones.
 
 
 ## 👨‍💻 Author

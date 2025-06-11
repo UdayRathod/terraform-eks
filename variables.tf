@@ -45,3 +45,8 @@ variable "eks_cluster_version" {
   description = "Base CIDR Block for VPC"
   default     = "1.31"
 }
+
+variable "grafana_admin_password" {
+  type        = string
+  description = "Admin password for Grafana"
+}

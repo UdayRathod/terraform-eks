@@ -86,24 +86,26 @@ resource "helm_release" "cluster-autoscaler" {
   version    = "9.37.0"
   chart      = "cluster-autoscaler"
 
-  set = [
-    {
-      name  = "rbac.serviceAccount.name"
-      value = "cluster-autoscaler"
-    },
-    {
-      name  = "awsRegion"
-      value = var.aws_region
-    },
-    {
-      name  = "autoDiscovery.clusterName"
-      value = module.eks.cluster_name
-    },
-    {
-      name  = "serviceAccount.create"
-      value = "false"
-    }
-  ]
+  set {
+    name  = "rbac.serviceAccount.name"
+    value = "cluster-autoscaler"
+  }
+
+  set {
+    name  = "awsRegion"
+    value = var.aws_region
+  }
+
+  set {
+    name  = "autoDiscovery.clusterName"
+    value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "false"
+  }
+
 
   depends_on = [helm_release.metrics-server, module.eks]
 

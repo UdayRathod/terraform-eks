@@ -11,10 +11,10 @@ data "aws_eks_cluster_auth" "cluster" {
 
 # Configures the Helm provider to interact with the Kubernetes cluster using EKS credentials.
 provider "helm" {
-  kubernetes = {
+  kubernetes {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    exec = {
+    exec {
       api_version = "client.authentication.k8s.io/v1"
       command     = "aws"
       args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--cache"]
@@ -30,24 +30,26 @@ resource "helm_release" "metrics-server" {
   namespace  = "kube-system"
   version    = "3.12.1"
 
-  set = [
-    {
-      name  = "defaultArgs[0]"
-      value = "--cert-dir=/tmp"
-    },
-    {
-      name  = "defaultArgs[1]"
-      value = "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname"
-    },
-    {
-      name  = "defaultArgs[2]"
-      value = "--kubelet-use-node-status-port"
-    },
-    {
-      name  = "defaultArgs[3]"
-      value = "--metric-resolution=15s"
-    }
-  ]
+  set {
+    name  = "defaultArgs[0]"
+    value = "--cert-dir=/tmp"
+  }
+
+  set {
+    name  = "defaultArgs[1]"
+    value = "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname"
+  }
+
+  set {
+    name  = "defaultArgs[2]"
+    value = "--kubelet-use-node-status-port"
+  }
+
+  set {
+    name  = "defaultArgs[3]"
+    value = "--metric-resolution=15s"
+  }
+
 
   depends_on = [module.eks]
 }
