@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-cd-application
+  namespace: argocd
+spec:
+  #If you have multiple projects, projects are like environments or teams.
+  project: default
+
+  # The source repository where the Kubernetes manifests are stored.
+  source:
+    repoURL: https://github.com/UdayRathod/terraform-eks-wanderlust-app.git
+    path: k8-manifests/
+    targetRevision: main
+
+  # The destination cluster and namespace where the application will be deployed.
+  destination:
+    server: https://kubernetes.default.svc  #This value of server is valid only if the Argo CD controller is installed inside the same cluster you're deploying apps to (which you are),so this is fine.
+    namespace: wanderlust
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true  # This option allows Argo CD to create the namespace if it doesn't exist.
+      - ApplyOutOfSyncOnly=true  # This option ensures that only out-of-sync resources are applied, which can help reduce unnecessary changes.

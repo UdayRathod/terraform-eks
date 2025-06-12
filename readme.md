@@ -15,6 +15,7 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 - 🔐 Secrets and ConfigMaps for sensitive configuration
 - 🧾 Resource Quotas and Limit Ranges per namespace
 - 📊 Monitoring with Prometheus and Grafana
+- 🚀 Argo CD Deployment as Gitops tool
 
 ---
 
@@ -27,6 +28,7 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 - **Monitoring**: Prometheus + Grafana
 - **Ingress**: AWS ALB Ingress Controller
 - **Autoscaling**: HPA + Cluster Autoscaler
+- **Gitops** : Argo-CD
 
 ---
 
@@ -41,7 +43,7 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 - **Monitoring**: 
 - **Prometheus**: Scrapes metrics
 - **Grafana**: Visualizes metrics
-
+- **Argo-CD** : As a single source truth to deliver our applications & infrastructure.
 ---
 
 ## 📁 Directory Structure
@@ -52,6 +54,8 @@ terraform-eks-cluster/
 ├── cluster-autoscaler.tf
 ├── eks.tf
 ├── eks-metrics-server.tf
+├── prometheus-grafana.tf
+├── argo-cd.tf
 ├── locals.tf
 ├── outputs.tf
 ├── provider.tf
@@ -59,13 +63,14 @@ terraform-eks-cluster/
 ├── variables.tf
 ├── vpc.tf
 ├── k8-manifests/
-│   ├── deployment.yaml
-│   ├── hpa.yaml
-│   ├── ingress.yaml
-│   ├── namespace.yaml
-│   ├── secret.yaml
-│   ├── resource-quota.yaml
-│   └── service.yaml
+    ├── deployment.yml
+    ├── hpa.yml
+    ├── ingress.yml
+    ├── namespace.yml
+    ├── secret.yml
+    ├── resource-quota.yml
+    ├── argo-cd.yml
+    └── service.yml
 ```
 
 
@@ -139,6 +144,7 @@ http://<ALB-DNS>/prometheus:80
 
 Grafana Dashboard URL:
 http://<ALB-DNS>/grafana:80
+
 Default login: admin
 Password: I have variablized the grafana_admin_password and stored the value in terraform.tfvars which not committed to Git. 
 You can create a terraform.tfvars file and the store the grafana password value.
@@ -146,6 +152,14 @@ You can create a terraform.tfvars file and the store the grafana password value.
 Import Prometheus as a data source
 Use pre-built Kubernetes dashboards(3662) or create custom ones.
 
+Gitops Dashboard URL:
+http://<ALB-DNS>/argocd:80
+
+Default login: admin
+Password: I have variablized the argocd_admin_password and stored the value in terraform.tfvars which not committed to Git. 
+You can create a terraform.tfvars file and the store the argocd admin password value.
+Note: The Argo CD admin password is securely set using a `bcrypt` hashed value, as Argo CD expects the argocdServerAdminPassword value to be a bcrypt-hashed password (not plaintext).
+This is the command we used to generate the bcrypt hash: htpasswd -nbBC 10 "" "your-password" | tr -d ':\n'
 
 ## 👨‍💻 Author
 Uday Rathod
