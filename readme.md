@@ -1,6 +1,6 @@
 # 🌍 Wanderlust Travel App on Amazon EKS
 
-Wanderlust is a containerized Flask-based travel booking application deployed on an AWS Elastic Kubernetes Service (EKS) cluster using Terraform infrastructure-as-code. It showcases cloud-native best practices such as autoscaling, monitoring, and managed services.
+Wanderlust is a containerized Flask-based travel booking application deployed on an AWS Elastic Kubernetes Service (EKS) cluster using Terraform infrastructure-as-code. It showcases cloud-native best practices such as autoscaling, GitOps, observability, and secure image management.
 
 ---
 
@@ -15,7 +15,8 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 - 🔐 Secrets and ConfigMaps for sensitive configuration
 - 🧾 Resource Quotas and Limit Ranges per namespace
 - 📊 Monitoring with Prometheus and Grafana
-- 🚀 Argo CD Deployment as Gitops tool
+- 🚀 Argo CD for GitOps-based deployment
+- 🔄 GitHub Actions CI/CD for Docker image builds and deployment automation
 
 ---
 
@@ -29,6 +30,8 @@ Wanderlust is a containerized Flask-based travel booking application deployed on
 - **Ingress**: AWS ALB Ingress Controller
 - **Autoscaling**: HPA + Cluster Autoscaler
 - **Gitops** : Argo-CD
+- **CI/CD** : GitHub Actions
+- **Image Registry** : DockerHub
 
 ---
 
@@ -62,14 +65,22 @@ terraform-eks-cluster/
 ├── security-grp.tf
 ├── variables.tf
 ├── vpc.tf
+├── docker
+│   ├── Dockerfile
+│   ├── static
+│   ├── templates
+│   ├── app.py
+│   ├── requirements.txt
+├── .github/workflows
+│   ├── main.yml
 ├── k8-manifests/
-    ├── deployment.yml
-    ├── hpa.yml
-    ├── ingress.yml
-    ├── namespace.yml
-    ├── secret.yml
-    ├── resource-quota.yml
-    ├── argo-cd.yml
+│   ├── deployment.yml
+│   ├── hpa.yml
+│   ├── ingress.yml
+│   ├── namespace.yml
+│   ├── secret.yml
+│   ├── resource-quota.yml
+│   ├── argo-cd.yml
     └── service.yml
 ```
 
@@ -123,17 +134,33 @@ terraform apply
 ```
 
 
-## 🛠️ Deploy Kubernetes Manifests
+## 🛠️ CI/CD Pipeline (GitHub Actions)
+This repo uses GitHub Actions to automate CI/CD. On every push to the main branch:
 
-### 1. Copy the manifests files to your k8 nodes by command:
-```bash
-git clone https://github.com/UdayRathod/terraform-eks/tree/eb770dd30bd5bc2838f1ebcaf0ed6962bc740d69/k8-manifests
-```
+A Docker image is built using the codebase.
+The image is pushed to DockerHub.
+The deployment.yaml in k8-manifests/ is updated with the new image tag.
+The updated manifest is committed back to main.
 
-### 2. Deploy the K8 resources:
-```bash
-kubectl apply -f k8-manifests/
-```
+Argo CD automatically syncs the updated manifest to EKS.
+
+## 🔐 Create your GitHub Secrets as below:
+DOCKERHUB_USERNAME
+
+DOCKERHUB_TOKEN
+
+AWS_ACCESS_KEY_ID
+
+AWS_SECRET_ACCESS_KEY
+
+## Update the below fields in main.yml for github actions:
+EKS_CLUSTER_NAME
+
+AWS_REGION
+
+DOCKERHUB_REPO
+
+💡 Note: Argo CD monitors the repo and applies updated manifests automatically (GitOps).
 
 ## 📈 Monitor via Prometheus & Grafana
 Access Grafana via Ingress ALB

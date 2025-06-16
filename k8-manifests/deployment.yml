@@ -25,7 +25,7 @@ spec:
       containers:
   # This is main container runs after the init container starts & completes its task, if any errors in init, the main container will not start.
         - name: wanderlust-container
-          image: wanderlust-app:latest
+          image: DOCKER_IMAGE #Here we are configuring image value to be updated from github actions Deploy to EKS stage.
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

@@ -1,0 +1,123 @@
+# This is a workflow to set up Actions to deply to AWS EKS and push Docker images to ECR.
+name: Push to ECR & Deploy to EKS
+
+# Controls when the workflow will run
+# Triggers the workflow on push, pull request & manual events but only for the "main" branch
+on:
+
+# Uncomment the following lines to enable trigger on push events
+# push:
+#   branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+env:
+  #Make sure your eks cluster is created and running before you run this workflow.
+  EKS_CLUSTER_NAME: eks-wanderlust
+  AWS_REGION: us-west-2
+  DOCKERHUB_REPO: rathoduday/wanderlust-app # This is the Dockerhub repository where the image will be pushed
+# ECR_REPOSITORY: wanderlust-app    # Uncomment this line if you are using ECR and mention your ECS repo name
+
+
+# The jobs that will run as part of this workflow
+jobs: 
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Using the git commit hash as a unique identifier for the Image tag
+      - name: Set short git commit SHA
+        id: commit
+        uses: prompt/actions-commit-hash@v2
+
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Setup kubectl
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+
+      # We are using Dockerhub, so set the Log in Dockerhub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        env:
+          IMAGE_TAG: ${{ steps.commit.outputs.short }}
+        run: |
+          docker build -t $DOCKERHUB_REPO:$IMAGE_TAG -f docker/Dockerfile .
+          docker push $DOCKERHUB_REPO:$IMAGE_TAG
+
+
+      - name: Update Kubernetes deployment with new image tag
+        env:
+          IMAGE_TAG: ${{ steps.commit.outputs.short }}
+        run: |
+          sed -i "s|DOCKER_IMAGE|$DOCKERHUB_REPO:$IMAGE_TAG|g" k8-manifests/deployment.yaml
+
+
+      - name: Commit and push updated manifests
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add k8-manifests/deployment.yaml
+          git commit -m "Update image to $DOCKERHUB_REPO:${{ steps.commit.outputs.short }}"
+          git push origin main  
+
+
+
+################################################################################## 
+# If you are using ECR & directly deploying to EKS without ArgoCD, uncomment the following lines to log in and push the image to ECR & comment the Dockerhub steps above.
+
+# Set up AWS credentials, mention the aws-access-key-id and aws-secret-access-key as secrets in your repository settings.
+#     - name: Set up AWS credentials
+#       uses: aws-actions/configure-aws-credentials@v3
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ env.AWS_REGION }}     
+      
+      # Log in to Amazon ECR
+#     - name: Log in to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v1
+
+      # Build,tag and push Docker image to ECR
+#     - name: Build and push Docker image
+#       uses: aws-actions/amazon-ecr-build-and-push-image@v1
+#       with:
+#         repository: ${{ env.ECR_REPOSITORY }}
+#         registry: ${{ steps.login-ecr.outputs.registry }}
+#         image-tag: ${{ steps.commit.outputs.short }}
+#         dockerfile: docker/Dockerfile
+
+      # Set the context for kubectl to deploy to EKS
+#     - name: Update kube config
+#       run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+
+      # Deploy the application to EKS
+#     - name: Deploy to EKS
+#       env:
+#         IMAGE_TAG: ${{ steps.commit.outputs.short }}
+#     #   ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}   #Uncomment this line if you are using ECR and comment the next line
+#         DOCKERHUB_REPO: ${{ env.DOCKERHUB_REPO }}
+#       run: |
+#         sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8-manifests/deployment.yaml && \
+#         kubectl apply -f k8-manifests/
+#         kubectl rollout status deployment/wanderlust-app-deployment
+#         kubectl get pods
+#         kubectl get services
+#         kubectl get deployments
+
+################################################################################## 
